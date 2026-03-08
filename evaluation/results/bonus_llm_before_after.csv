@@ -1,0 +1,7 @@
+scenario_id,decision,base_latency_sec,llm_used,llm_latency_sec,total_with_llm_latency_sec,llm_error
+S1,ALLOW,0.009774,True,0.742,0.751774,
+S2,BLOCK,0.018324,False,0.0,0.018324,
+S3,BLOCK,0.019307,False,0.0,0.019307,
+S4,BLOCK,0.010161,False,0.0,0.010161,
+S5,MASK,0.015052,True,0.683,0.698052,
+S6,BLOCK,0.005767,False,0.0,0.005767,

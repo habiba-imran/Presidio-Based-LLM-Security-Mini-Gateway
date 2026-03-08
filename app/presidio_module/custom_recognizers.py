@@ -38,3 +38,21 @@ def create_employee_id_recognizer():
     )
 
     return employee_recognizer
+
+
+def create_internal_id_recognizer():
+    """Custom recognizer for internal ticket IDs."""
+
+    internal_pattern = Pattern(
+        name="internal_id_pattern",
+        regex=r"\bINT-[A-Z]{3}-\d{4}\b",
+        score=0.6
+    )
+
+    internal_recognizer = PatternRecognizer(
+        supported_entity="INTERNAL_ID",
+        patterns=[internal_pattern],
+        context=["ticket", "internal", "incident", "case"]
+    )
+
+    return internal_recognizer

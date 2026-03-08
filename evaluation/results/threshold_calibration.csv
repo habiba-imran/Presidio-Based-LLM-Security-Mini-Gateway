@@ -1,0 +1,4 @@
+block_threshold,mask_threshold,pii_threshold,decision,latency_sec
+0.8,0.4,0.5,BLOCK,0.018222
+0.7,0.3,0.5,BLOCK,0.01678
+0.9,0.6,0.5,MASK,0.014959

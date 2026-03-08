@@ -1,0 +1,8 @@
+{
+  "scenario_count": 6,
+  "decision_match_rate": 0.8333,
+  "block_count": 4,
+  "mask_count": 1,
+  "allow_count": 1,
+  "avg_latency_sec": 0.013064
+}

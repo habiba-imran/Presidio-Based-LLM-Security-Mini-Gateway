@@ -1,7 +1,8 @@
-from presidio_analyzer import AnalyzerEngine
+from presidio_analyzer import AnalyzerEngine, RecognizerResult
 from app.presidio_module.custom_recognizers import (
     create_api_key_recognizer,
-    create_employee_id_recognizer
+    create_employee_id_recognizer,
+    create_internal_id_recognizer,
 )
 
 analyzer = AnalyzerEngine()
@@ -9,9 +10,65 @@ analyzer = AnalyzerEngine()
 # register custom recognizers
 api_recognizer = create_api_key_recognizer()
 employee_recognizer = create_employee_id_recognizer()
+internal_id_recognizer = create_internal_id_recognizer()
 
 analyzer.registry.add_recognizer(api_recognizer)
 analyzer.registry.add_recognizer(employee_recognizer)
+analyzer.registry.add_recognizer(internal_id_recognizer)
+
+
+CONTEXT_HINTS = {
+    "EMPLOYEE_ID": ["employee", "emp id", "employee id", "staff id"],
+    "API_KEY": ["api key", "secret", "token", "credential"],
+    "INTERNAL_ID": ["ticket", "internal", "incident", "case"],
+}
+
+
+CALIBRATION_FACTORS = {
+    "API_KEY": 1.10,
+    "EMPLOYEE_ID": 1.15,
+    "INTERNAL_ID": 1.05,
+    "PHONE_NUMBER": 1.00,
+    "EMAIL_ADDRESS": 1.00,
+}
+
+
+def _context_bonus(text: str, result: RecognizerResult) -> float:
+    hints = CONTEXT_HINTS.get(result.entity_type, [])
+    if not hints:
+        return 0.0
+
+    start = max(0, result.start - 40)
+    end = min(len(text), result.end + 40)
+    window = text[start:end].lower()
+
+    if any(hint in window for hint in hints):
+        return 0.15
+    return 0.0
+
+
+def _calibrate_score(result: RecognizerResult) -> None:
+    factor = CALIBRATION_FACTORS.get(result.entity_type, 1.0)
+    result.score = min(1.0, result.score * factor)
+
+
+def _add_composite_entities(results):
+    phone_results = [r for r in results if r.entity_type == "PHONE_NUMBER"]
+    email_results = [r for r in results if r.entity_type == "EMAIL_ADDRESS"]
+
+    if not phone_results or not email_results:
+        return results
+
+    start = min(min(r.start for r in phone_results), min(r.start for r in email_results))
+    end = max(max(r.end for r in phone_results), max(r.end for r in email_results))
+
+    composite = RecognizerResult(
+        entity_type="COMPOSITE_CONTACT",
+        start=start,
+        end=end,
+        score=0.9,
+    )
+    return results + [composite]
 
 
 def analyze_pii(text: str, threshold=0.5):
@@ -23,6 +80,12 @@ def analyze_pii(text: str, threshold=0.5):
         text=text,
         language="en"
     )
+
+    for result in results:
+        result.score = min(1.0, result.score + _context_bonus(text, result))
+        _calibrate_score(result)
+
+    results = _add_composite_entities(results)
 
     # filter low confidence detections
     filtered_results = [r for r in results if r.score >= threshold]

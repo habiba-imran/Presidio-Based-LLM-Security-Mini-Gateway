@@ -1,0 +1,6 @@
+scenario_type,count,avg_latency_sec,min_latency_sec,max_latency_sec
+benign,1,0.009774,0.009774,0.009774
+injection,1,0.018324,0.018324,0.018324
+jailbreak,1,0.019307,0.019307,0.019307
+pii,2,0.012606,0.010161,0.015052
+secret,1,0.005767,0.005767,0.005767

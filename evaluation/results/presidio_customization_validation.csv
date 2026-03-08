@@ -1,0 +1,5 @@
+customization,expected_entity,entities_found,pass,max_score
+Custom recognizer API_KEY,API_KEY,API_KEY;PERSON,True,1.0
+Context-aware EMPLOYEE_ID,EMPLOYEE_ID,EMPLOYEE_ID,True,1.0
+Composite contact detection,COMPOSITE_CONTACT,COMPOSITE_CONTACT;EMAIL_ADDRESS;URL,True,1.0
+Confidence calibration INTERNAL_ID,INTERNAL_ID,INTERNAL_ID,True,1.0
