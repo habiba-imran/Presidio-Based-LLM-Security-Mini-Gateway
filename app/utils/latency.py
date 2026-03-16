@@ -1,14 +1,13 @@
+```python
 import time
+from contextlib import contextmanager
 
 
-def measure_latency(func, *args):
-
+@contextmanager
+def measure_latency():
+    """Context manager to measure execution time of a block."""
     start = time.time()
-
-    result = func(*args)
-
-    end = time.time()
-
-    latency = end - start
-
-    return result, latency
+    result = {}
+    yield result
+    result["latency"] = time.time() - start
+```
