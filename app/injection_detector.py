@@ -1,6 +1,4 @@
-```
 import re
-
 # Dictionary mapping specific injection attempt patterns to their risk scores.
 # These patterns cover distinct attack vectors (jailbreaks, prompt extraction, bypass).
 # The scores are additive; multiple hits increase the total risk.
@@ -43,4 +41,3 @@ def detect_injection(text: str) -> float:
 
     # Cap the final score at a maximum of 1.0
     return min(score, 1.0)
-```
